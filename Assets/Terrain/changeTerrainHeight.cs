@@ -5,6 +5,76 @@ public class changeTerrainHeight : MonoBehaviour {
 
     public Terrain TerrainMain;
     public LineRenderer line;
+
+
+    bool LinesIntersect(Vector2 A, Vector2 B, Vector2 C, int terrainZmax)
+    {
+        Vector2 D = new Vector2(C.x, terrainZmax + 1);
+        Vector2 CmP = new Vector2(C.x - A.x, C.y - A.y);
+        Vector2 r = new Vector2(B.x - A.x, B.y - A.y);
+        Vector2 s = new Vector2(D.x - C.x, D.y - C.y);
+
+        float CmPxr = CmP.x * r.y - CmP.y * r.x;
+        float CmPxs = CmP.x * s.y - CmP.y * s.x;
+        float rxs = r.x * s.y - r.y * s.x;
+
+        if (CmPxr == 0f)
+        {
+            // Lines are collinear, and so intersect if they have any overlap
+
+            return ((C.x - A.x < 0f) != (C.x - B.x < 0f))
+                || ((C.y - A.y < 0f) != (C.y - B.y < 0f));
+        }
+
+        if (rxs == 0f)
+            return false; // Lines are parallel.
+
+        float rxsr = 1f / rxs;
+        float t = CmPxs * rxsr;
+        float u = CmPxr * rxsr;
+
+        return (t >= 0f) && (t <= 1f) && (u >= 0f) && (u <= 1f);
+    }
+
+    bool InsidePolygon(Vector2 p, int terrainZmax)
+    {
+        Vector3[] positions = new Vector3[line.positionCount];
+        line.GetPositions(positions);
+
+        int count = 0;
+        Vector2 p1, p2;
+        int n = positions.Length;
+
+        for (int i = 0; i < n; i++)
+        {
+            p1.y = positions[i].z;// - p.y;
+            p1.x = positions[i].x;// - p.x;
+            if (i != n - 1)
+            {
+                p2.y = positions[(i + 1)].z;// - p.y;
+                p2.x = positions[(i + 1)].x;// - p.x;
+            }
+            else
+            {
+                p2.y = positions[0].z;// - p.y;
+                p2.x = positions[0].x;// - p.x;
+            }
+            if (LinesIntersect(p1, p2, p, terrainZmax))
+            {
+                count++;
+            }
+        }
+
+        if (count % 2 == 1)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     void Update()
     {
 
@@ -68,8 +138,6 @@ public class changeTerrainHeight : MonoBehaviour {
             Vector3[] positions = new Vector3[line.positionCount];
             line.GetPositions(positions);
             
-
-
             float height = 0.05f;
 
             for (int i = 0; i < line.positionCount; i++)
@@ -88,7 +156,7 @@ public class changeTerrainHeight : MonoBehaviour {
             Vector3[] positions = new Vector3[line.positionCount];
             line.GetPositions(positions);
             
-            float height = 0.25f;
+            float height = 0.10f;
 
             /* Find the reactangle the shape is in! The sides of the rectangle are based on the most-top, -right, -bottom and -left vertex.
             ** Use Rect.Contains in Unity API and this website: https://answers.unity.com/questions/850138/how-do-i-find-the-top-of-a-mesh.html
@@ -100,6 +168,7 @@ public class changeTerrainHeight : MonoBehaviour {
             float fleft = Mathf.Infinity;
             for (int i = 0; i < line.positionCount; i++)
             {
+                //find the outmost points
                 if(ftop < positions[i].z)
                 {
                     ftop = positions[i].z;
@@ -122,43 +191,29 @@ public class changeTerrainHeight : MonoBehaviour {
             int bottom = Mathf.RoundToInt(fbottom);
             int left = Mathf.RoundToInt(fleft);
             
-            int terrainChangeXmax = right - left;
-            int terrainChangeZmax = top - bottom;
+            int terrainXmax = right - left;
+            int terrainZmax = top - bottom;
 
-            Debug.Log(left); //135
+            /*Debug.Log(left); //135
             Debug.Log(bottom); //102
             Debug.Log(right); //356
             Debug.Log(top); //359
-            Debug.Log(terrainChangeXmax); //221
-            Debug.Log(terrainChangeZmax); //257
-            float[,] shapeHeights = TerrainMain.terrainData.GetHeights(left, bottom, terrainChangeXmax, terrainChangeZmax);
+            Debug.Log(terrainXmax); //221
+            Debug.Log(terrainZmax); //257*/
+            float[,] shapeHeights = TerrainMain.terrainData.GetHeights(left, bottom, terrainXmax, terrainZmax);
 
-            
-            bool raise = true;
-            int collisionRadius = 0;
-            int xCrd = 0;
-            int zCrd = 0;
-
+            Vector2 point;
             /* Loop through all points of the shape perimeter */
-            for (int i = 0; i < line.positionCount; i++)
+            for (int i = 0; i < terrainZmax; i++)
             {
-                for(int j = 0; j < (terrainChangeZmax - 1); j++)
+                point.y = i + 102;
+                for (int j = 0; j < terrainXmax; j++)
                 {
-                    xCrd = right - Mathf.RoundToInt(positions[i].x);
-                    zCrd = Mathf.RoundToInt(positions[i].z) - bottom;
-                    if ((j - collisionRadius) < zCrd && zCrd <= (j + collisionRadius))
+                    point.x = j + 135;
+                    if (InsidePolygon(point, bottom))
                     {
-                        raise = raise ? false : true;
+                        shapeHeights[i, j] = height;
                     }
-                    Debug.Log("point: " + i + "; z: " + xCrd + "; x: " + j + "; raise: " + raise);
-                    
-
-                    if (raise)
-                    {
-                        shapeHeights[j, xCrd] = height;
-                    }
-                    /*TerrainMain.terrainData.SetHeightsDelayLOD(left, bottom, shapeHeights);*/
-
                 }
             }
 

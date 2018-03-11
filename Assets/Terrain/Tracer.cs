@@ -4,23 +4,25 @@ using System.Collections;
 public class Tracer : MonoBehaviour
 {
     public Terrain TerrainMain;
+    int xPos;
+    int zPos;
+    int cRadius = 10;
+    float height = 0.05f;
+    Plane objPlane;
+    float rayDistance;
 
     // Update is called once per frame
     void Update()
     {
         if (((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved) || Input.GetMouseButton(0)))
         {
-            Plane objPlane = new Plane(Camera.main.transform.forward * -1, this.transform.position);
-
+            objPlane = new Plane(Camera.main.transform.forward * -1, this.transform.position);
             Ray mRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-            float rayDistance;
             if (objPlane.Raycast(mRay, out rayDistance))
             {
                 this.transform.position = mRay.GetPoint(rayDistance);
-                int xPos = (int) mRay.GetPoint(rayDistance).x;
-                int zPos = (int) mRay.GetPoint(rayDistance).z;
-                int cRadius = 10;
-                float height = 0.05f;
+                xPos = (int) mRay.GetPoint(rayDistance).x;
+                zPos = (int) mRay.GetPoint(rayDistance).z;
 
                 /* Height data is adjusted to the circle shaped "Brush" and it's centered position */
                 float[,] pointerHeights = TerrainMain.terrainData.GetHeights((xPos-cRadius), (zPos - cRadius), (2* cRadius), (2 * cRadius));
