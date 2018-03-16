@@ -100,7 +100,6 @@ public class Tracer : MonoBehaviour
 
             if (Input.GetMouseButtonUp(0))
             {
-                Debug.Log(lineGo);
                 if(finishedLine != null)
                     raiseTerrain(finishedLine);
                 finishedLine = null;
@@ -119,7 +118,6 @@ public class Tracer : MonoBehaviour
 
     void raiseTerrain(GameObject lineGO)
     {
-        Debug.Log("ACTIVATED");
         LineRenderer line = lineGO.GetComponent<LineRenderer>();
         /* Set the positions to array "positions" */
         Vector3[] positions = new Vector3[line.positionCount];
