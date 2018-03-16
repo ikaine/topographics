@@ -236,6 +236,8 @@
     <Compile Include="Assets\CurvedLine_2016_03_11\CurvedLine\LineSmoother.cs" />
     <Compile Include="Assets\Terrain\changeTerrainHeight.cs" />
     <Compile Include="Assets\Terrain\changeTerrainHeight_lineMarker.cs" />
+    <Compile Include="Assets\Terrain\Line.cs" />
+    <Compile Include="Assets\Terrain\LineCreator.cs" />
     <Compile Include="Assets\Terrain\Tracer.cs" />
     <Compile Include="Assets\Terrain\Triangulator.cs" />
   </ItemGroup>
