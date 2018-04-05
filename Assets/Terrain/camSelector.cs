@@ -10,7 +10,7 @@ public class camSelector : MonoBehaviour
     public Camera drawingCamera;
     public Camera explorationCamera;
     private Camera smallCam;
-    private Rect smallSize = new Rect(.9f, .9f, 1f, 1f);
+    private Rect smallSize = new Rect(.7f, .7f, 1f, 1f);
     private Rect fullSize = new Rect(0f, 0f, 1f, 1f);
     public GameObject player;
     FirstPersonController controller;

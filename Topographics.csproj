@@ -234,11 +234,11 @@
     <Compile Include="Assets\Terrain\camSelector.cs" />
     <Compile Include="Assets\Terrain\changeTerrainHeight.cs" />
     <Compile Include="Assets\Terrain\changeTerrainHeight_lineMarker.cs" />
+    <Compile Include="Assets\Terrain\CreateGrid.cs" />
     <Compile Include="Assets\Terrain\Drawing\CurvedLine_2016_03_11\CurvedLine\CurvedLinePoint.cs" />
     <Compile Include="Assets\Terrain\Drawing\CurvedLine_2016_03_11\CurvedLine\CurvedLineRenderer.cs" />
     <Compile Include="Assets\Terrain\Drawing\CurvedLine_2016_03_11\CurvedLine\LineSmoother.cs" />
     <Compile Include="Assets\Terrain\Drawing\scripts\Line.cs" />
-    <Compile Include="Assets\Terrain\Drawing\scripts\LineCreator.cs" />
     <Compile Include="Assets\Terrain\Drawing\scripts\Tracer.cs" />
   </ItemGroup>
   <ItemGroup>
